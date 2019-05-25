@@ -1,0 +1,39 @@
+这是我复制的，一搜一大堆
+
+#include <reg52.h>
+sbit SPI_DI =P0^1; //MMC数据输入
+sbit SPI_DO =P0^0;//MMC数据输出，可不接
+sbit SPI_SCL=P0^2;//时钟线
+
+void Write_Byte(unsigned char value)
+{ 
+unsigned char i;
+for (i=0;i<8;i++) 
+{
+if (((value>>(7-i))&0x01)==0x01) 
+SPI_DI=1; 
+else SPI_DI=0;
+SPI_SCL=0; 
+delay(5); 
+//必须要加延时，否则会因为操作太快而不响应。
+SPI_SCL=1;
+delay(5);
+//必须要加延时，否则会因为操作太快而不响应。 
+}
+}
+
+unsigned char Read_Byte()
+{ 
+unsigned char temp=0;
+unsigned char i;
+for (i=0;i<8;i++) 
+{
+SPI_DO=1;
+SPI_SCL=0; 
+delay(5);
+temp=(temp<<1)+(unsigned char)SPI_DO; 
+SPI_SCL=1; 
+delay(5);
+}
+return (temp);
+}
